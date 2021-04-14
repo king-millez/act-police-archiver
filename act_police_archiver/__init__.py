@@ -1,11 +1,10 @@
 from requests import get, post
 from bs4 import BeautifulSoup
-import argparse, sys, os, json, hashlib
+import argparse, sys, os, json, hashlib, re
 
 def main():
     HUB_URL = 'https://www.policenews.act.gov.au/views/ajax'
     reqargs = {
-        "page": "0,0,0,0",
         "view_name": "content_listing_blocks",
         "view_display_id": "block",
         "view_args": "",
@@ -54,18 +53,18 @@ def scrape_release(url, output_dir):
         print(f'Saving "{_article_title}"...')
         os.mkdir(RELEASE_DIR)
 
-        img_list = []
-        _html = bytes(article_data.prettify().replace('\u25b2', '^').replace('\u2011', '-'), 'utf-8').decode('utf-8','ignore')
+        _html = re.compile('[^\u0020-\u024F]').sub('', article_data.prettify().replace('\u25b2', '^').replace('\u2011', '-')) # Remove Chinese characters
+
         for index,image in enumerate(article_data.find_all('img')):
             _file_key = [image['src'], f'{"{:02d}".format(index + 1)}.jpg']
-            img_list.append({_file_key[0], _file_key[1]})
             download_img(_file_key[0], _file_key[1], RELEASE_DIR)
-            _html.replace(_file_key[0], _file_key[1])
-        
+            _html = _html.replace(_file_key[0], _file_key[1])
+
         with open(f'{RELEASE_DIR}index.html', 'w') as f:
             f.write(_html)
     else:
         print(f'Skipping "{_article_title}"...')
+        
 
 def download_img(url, title, output_dir):
     with open(output_dir + title, 'wb') as f:
