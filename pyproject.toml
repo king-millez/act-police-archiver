@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "act-police-archiver"
-version = "1.0.0"
+version = "1.0.1"
 description = "Archive ACT Policing Media Releases"
 authors = ["king-millez <Millez.Dev@gmail.com>"]
 

@@ -2,7 +2,19 @@
 
 A tool I've made to keep archives of ACT Policing's Media Releases.
 
+---
+
+PyPI: [https://pypi.org/project/act-police-archiver/](https://pypi.org/project/act-police-archiver/)
+
 ## Setup
+
+### With pip
+
+```sh
+pip3 install act-police-archiver
+```
+
+### Manual
 
 Install `poetry`:
 
