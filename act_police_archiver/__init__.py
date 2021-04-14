@@ -45,17 +45,29 @@ def scrape_release(url, output_dir):
     _article_title = article_data.find('h1', {'id': 'page-title'}).text.strip()
     _time = article_data.find('span', {'property': 'dc:date dc:created'})['content'][:-6].replace(':', '').replace('T', '').replace('-', '')
     RELEASE_DIR = f"{output_dir}{_time} - {_article_title.replace(':', '_').replace('/', '-').replace('?', '_').replace('UPDATE ', '')} [{hashlib.md5(article_data.text.encode('utf-8')).hexdigest()[:6]}]/"
+    IMG_DIR = f'{RELEASE_DIR}images/'
 
     if(not os.path.isdir(RELEASE_DIR)):
         print(f'Saving "{_article_title}"...')
         os.mkdir(RELEASE_DIR)
-
         _html = re.compile('[^\u0020-\u024F]').sub('', article_data.prettify().replace('\u25b2', '^').replace('\u2011', '-')) # Remove Chinese characters
 
+        img_list = []
         for index,image in enumerate(article_data.find_all('img')):
             _file_key = [image['src'], f'{"{:02d}".format(index + 1)}.jpg']
-            download_img(_file_key[0], _file_key[1], RELEASE_DIR)
-            _html = _html.replace(_file_key[0], _file_key[1])
+            if(not _file_key[0] in img_list):
+                img_list.append(_file_key[0])
+                download_img(_file_key[0], _file_key[1], RELEASE_DIR)
+                _html = _html.replace(_file_key[0], _file_key[1])
+
+        for index,image in enumerate(article_data.find_all('a', {'class': 'colorbox'})):
+            if(not os.path.isdir(IMG_DIR)):
+                os.mkdir(IMG_DIR)
+            _file_key = [image['href'], f'{"{:02d}".format(index + 1)}.jpg']
+            if(not _file_key[0] in img_list):
+                img_list.append(_file_key[0])
+                download_img(_file_key[0], _file_key[1], IMG_DIR)
+                _html = _html.replace(_file_key[0], f'images/{_file_key[1]}')
 
         with open(f'{RELEASE_DIR}index.html', 'w') as f:
             f.write(_html)
@@ -67,5 +79,6 @@ def download_img(url, title, output_dir):
     with open(output_dir + title, 'wb') as f:
         try:
             f.write(get(url).content)
+            print(f'Downloading {url}...')
         except:
-            raise ImgFail
+            pass
