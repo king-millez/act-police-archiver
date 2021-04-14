@@ -7,10 +7,6 @@ def main():
     reqargs = {
         "view_name": "content_listing_blocks",
         "view_display_id": "block",
-        "view_args": "",
-        "view_path": "node/46",
-        "view_base_path": "content-listing-testpage",
-        "view_dom_id": "83914759dfe44e841b04e53eeb354170",
         "pager_element": "3"
     }
     USAGE_MSG = 'act_police_archiver -o [OUTPUT DIR] -p [MEDIA RELEASE URL]'
