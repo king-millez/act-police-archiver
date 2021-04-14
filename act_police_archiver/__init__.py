@@ -1,5 +1,6 @@
 from requests import get, post
 from bs4 import BeautifulSoup
+from .errors import ImgFail
 import argparse, sys, os, json, hashlib, re
 
 def main():
@@ -67,4 +68,4 @@ def download_img(url, title, output_dir):
         try:
             f.write(get(url).content)
         except:
-            pass
+            raise ImgFail
