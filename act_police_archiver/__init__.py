@@ -19,6 +19,8 @@ def main():
     if(not args.output_dir):
         print('Output directory (-o) is required.')
         sys.exit(USAGE_MSG)
+    elif(args.output_dir[-1] == '"' or args.output_dir[-1] == "'"):
+        args.output_dir = f'{args.output_dir[:-1]}/'
     elif(args.output_dir[-1] != '/' or args.output_dir[-1] != '\\'):
         args.output_dir += '/'
 
